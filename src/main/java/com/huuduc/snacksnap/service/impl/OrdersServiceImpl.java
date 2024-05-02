@@ -315,6 +315,13 @@ public class OrdersServiceImpl implements OrdersService {
 
     }
 
+    @Override
+    public double getRevenue() {
+        double revenue = this.ordersRepository.getRevenue();
+
+        return revenue;
+    }
+
 //    public OrdersDTOResponse toDTO(Orders orders) {
 //        OrdersDTOResponse ordersDTOResponse = new OrdersDTOResponse();
 //        ordersDTOResponse.setId(orders.getId());

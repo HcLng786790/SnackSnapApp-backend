@@ -31,4 +31,6 @@ public interface OrdersService {
     long getCount(long statusId);
 
     OrdersDTORes cancelOrdersByAdmin(long ordersId);
+
+    double getRevenue();
 }

@@ -2,6 +2,7 @@ package com.huuduc.snacksnap.repository;
 
 import com.huuduc.snacksnap.data.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface OrdersRepository extends JpaRepository<Orders,Long> {
     List<Orders> findByUserIdAndStatusId(long userId,long statusId);
 
     Long countByStatusId(long statusId);
+
+    @Query(value = "SELECT SUM(o.totalPrice) FROM Orders o WHERE o.status.id=4")
+    double getRevenue();
 }

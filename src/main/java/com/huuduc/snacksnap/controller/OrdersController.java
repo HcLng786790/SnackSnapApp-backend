@@ -101,4 +101,11 @@ public class OrdersController {
         return ResponseEntity.ok(this.ordersService.cancelOrdersByAdmin(ordersId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/revenue")
+    public ResponseEntity<?> getRevenue(){
+
+        return ResponseEntity.ok(this.ordersService.getRevenue());
+    }
+
 }
