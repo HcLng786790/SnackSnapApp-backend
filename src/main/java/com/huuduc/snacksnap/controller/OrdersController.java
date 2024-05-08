@@ -43,6 +43,18 @@ public class OrdersController {
         return ResponseEntity.ok(this.ordersService.order2(userId, type, addressId));
     }
 
+    @Transactional
+    @PostMapping("/addNew3")
+    public ResponseEntity<?> orders3(@RequestParam long userId,
+                                     @RequestParam int type,
+                                     @RequestParam long addressId,
+                                     @RequestParam long promotionId) {
+
+        return ResponseEntity.ok(this.ordersService.order3(userId, type, addressId,promotionId));
+    }
+
+
+
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getById(@PathVariable long id) {
 
@@ -106,6 +118,12 @@ public class OrdersController {
     public ResponseEntity<?> getRevenue(){
 
         return ResponseEntity.ok(this.ordersService.getRevenue());
+    }
+
+    @GetMapping("/getDoanhThu")
+    public ResponseEntity<?> getDoanhThuThang(){
+
+        return ResponseEntity.ok(this.ordersService.getDoanhThuThang());
     }
 
 }

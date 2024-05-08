@@ -39,6 +39,8 @@ public class OrdersServiceImpl implements OrdersService {
     private MailService mailService;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private PromotionRepository promotionRepository;
 
     @Override
     public OrdersDTOResponse order(long userId, int type, long addressId) {
@@ -131,13 +133,84 @@ public class OrdersServiceImpl implements OrdersService {
         findUser.getCart().setTotalPrice(0);
         this.cartRepository.save(findUser.getCart());
 
+        return toDTO(newOrders);
+    }
 
-//        for (CartDetails cartDetails:cartDetailsList){
-//            this.cartDetailsRepositoy.deleteById(cartDetails.getId());
-//        }
+    @Override
+    public OrdersDTORes order3(long userId, int type, long addressId, long promotionId) {
 
+        Orders newOrders = new Orders();
+
+        User findUser = this.userReopsitory.findById(userId).orElseThrow(
+                () -> new NotFoundException(Collections.singletonMap("User id", userId))
+        );
+
+        newOrders.setOrderDate(new Date());
+        newOrders.setUser(findUser);
+        newOrders.setTypeDelivery(type);
+
+        Promotion findPromotion = this.promotionRepository.findById(promotionId).orElseThrow(
+                ()-> new NotFoundException(Collections.singletonMap("Promotion id",promotionId))
+        );
+
+        newOrders.setPromotion(findPromotion);
+
+        if(findUser.getCart().getTotalPrice() > findPromotion.getDiscount()){
+            newOrders.setTotalPrice(findUser.getCart().getTotalPrice() - findPromotion.getDiscount());
+        }else{
+            newOrders.setTotalPrice(0);
+        }
+
+        if (type == 1) {
+            newOrders.setTotalPrice(newOrders.getTotalPrice() + 25);
+        } else if (type == 2) {
+            newOrders.setTotalPrice(newOrders.getTotalPrice());
+        }
+
+        Status findStatus = this.statusRepository.findById((long) StatusConst.CONFTRM).orElseThrow(
+                () -> new NotFoundException(Collections.singletonMap("Status", StatusConst.CONFTRM))
+        );
+
+        newOrders.setStatus(findStatus);
+
+
+        Address findAddress = this.addressRepository.findById(addressId).orElseThrow(
+                () -> new NotFoundException(Collections.singletonMap("address id", addressId))
+        );
+
+        newOrders.setAddress(findAddress);
+
+        this.ordersRepository.save(newOrders);
+
+        List<CartDetails> cartDetailsList = findUser.getCart().getCartDetailsList();
+
+        for (int i = 0; i < cartDetailsList.size(); i++) {
+            cartDetailsList.get(i).setOrders(newOrders);
+            this.cartDetailsRepositoy.save(cartDetailsList.get(i));
+        }
+
+        // Xóa các cartDetails đã lưu từ cart
+//        findUser.getCart().getCartDetailsList().clear();
+////            findUser.getCart().setTotalPrice(0);
+//        this.cartRepository.save(findUser.getCart());
+
+        // Xóa các CartDetails
+        for (CartDetails cartDetails : cartDetailsList) {
+            cartDetails.setCart(null);
+//            this.cartDetailsRepositoy.delete(cartDetails);
+            this.cartDetailsRepositoy.save(cartDetails);
+        }
+
+        findUser.getCart().setTotalPrice(0);
+        this.cartRepository.save(findUser.getCart());
 
         return toDTO(newOrders);
+    }
+
+    @Override
+    public List<DoanhThuThang> getDoanhThuThang() {
+
+        return this.ordersRepository.getDoanhThuThang();
     }
 
     @Override
@@ -321,6 +394,8 @@ public class OrdersServiceImpl implements OrdersService {
 
         return revenue;
     }
+
+
 
 //    public OrdersDTOResponse toDTO(Orders orders) {
 //        OrdersDTOResponse ordersDTOResponse = new OrdersDTOResponse();

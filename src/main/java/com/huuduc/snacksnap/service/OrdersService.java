@@ -1,5 +1,6 @@
 package com.huuduc.snacksnap.service;
 
+import com.huuduc.snacksnap.data.dto.DoanhThuThang;
 import com.huuduc.snacksnap.data.dto.OrdersDTORes;
 import com.huuduc.snacksnap.data.dto.OrdersDTOResponse;
 import org.springframework.stereotype.Service;
@@ -33,4 +34,8 @@ public interface OrdersService {
     OrdersDTORes cancelOrdersByAdmin(long ordersId);
 
     double getRevenue();
+
+    OrdersDTORes order3(long userId, int type, long addressId, long promotionId);
+
+    List<DoanhThuThang> getDoanhThuThang();
 }
