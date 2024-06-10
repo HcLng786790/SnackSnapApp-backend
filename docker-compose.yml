@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: snacksnap-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=snacksnap
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=1234
+    volumes:
+      - ./snacksnap_data.sql:/docker-entrypoint-initdb.d/init.sql
+      - snacksnap-mysql-data:/var/lib/mysql
+    expose:
+      - 3306
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: snacksnap-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - MYSQL_HOST=snacksnap-mysql
+      - MYSQL_USER=user
+      - MYSQL_DB_NAME=snacksnap
+      - MYSQL_PORT=3306
+      - MYSQL_PASSWORD=1234
+    depends_on:
+      - mysql
+
+volumes:
+  snacksnap-mysql-data:
